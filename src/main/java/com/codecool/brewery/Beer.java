@@ -45,4 +45,16 @@ public abstract class Beer {
 
     // TODO: Add method to get fermentation days
     abstract int getFermentationDays();
+
+    public String getName(){
+        return name;
+    }
+
+    public double getAlcoholContent(){
+        return alcoholContent;
+    }
+
+    public LocalDate getProductionDate(){
+        return productionDate;
+    }
 }

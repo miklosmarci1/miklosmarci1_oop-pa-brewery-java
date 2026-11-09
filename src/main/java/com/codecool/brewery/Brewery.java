@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 class Brewery {
     private final String name;
     private final List<Brewer> brewers = new ArrayList<>();
+    private final Map<String, List<Beer>> stock = new HashMap<>();
 
     Brewery(String name) {
         this.name = Objects.requireNonNull(name, "Name can't be null.");
@@ -31,9 +32,16 @@ class Brewery {
         brewers.add(brewer);
     }
 
-    void addBeerToStock() {
-        // TODO: Implement proper null checking and validation
-        // TODO: add beer to stock
+    public void addBeerToStock(Beer beer, double temp) {
+
+        Objects.requireNonNull(beer, "Beer can't be null");
+
+        if(!beer.canBeStoredAt(temp)){
+            throw new IllegalArgumentException("This beer can't be stored at this temperature.");
+        }
+
+        stock.computeIfAbsent(beer.getName(), key -> new ArrayList<>())
+                .add(beer);
     }
 
     /**
