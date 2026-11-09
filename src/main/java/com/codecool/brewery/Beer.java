@@ -41,10 +41,8 @@ public abstract class Beer {
 
     // TODO: Add method to get storage temperature requirement
     // TODO: Consider canBeStoredAt method may accept parameters for temperature checks
-    abstract boolean canBeStoredAt();
+    abstract boolean canBeStoredAt(double temp);
 
     // TODO: Add method to get fermentation days
     abstract int getFermentationDays();
-
-    abstract boolean canBeStoredAt(double temp);
 }
