@@ -1,6 +1,8 @@
 package com.codecool.brewery;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -12,6 +14,7 @@ class Brewery {
     private final String name;
     private final List<Brewer> brewers = new ArrayList<>();
     private final Map<String, List<Beer>> stock = new HashMap<>();
+    private static final int OLD_BEER_THRESHOLD_DAYS = 180;
 
     Brewery(String name) {
         this.name = Objects.requireNonNull(name, "Name can't be null.");
@@ -84,8 +87,12 @@ class Brewery {
      * - Return collection of beer names
      */
     public List<String> findMaturedBeers() {
-        // TODO: Implement
-        return null;
+
+        return stock.values().stream()
+                .flatMap(List::stream)
+                .filter(a -> ChronoUnit.DAYS.between(a.getProductionDate(), LocalDate.now()) > OLD_BEER_THRESHOLD_DAYS)
+                .map(Beer::getName)
+                .toList();
     }
 
     /**
