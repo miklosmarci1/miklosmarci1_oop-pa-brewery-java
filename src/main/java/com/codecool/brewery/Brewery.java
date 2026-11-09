@@ -55,9 +55,18 @@ class Brewery {
      * - Count available helpers on each specified day
      * - Return the sum of helper counts across all days
      */
-    public int calculateProductionCapacity(List<DayOfWeek> days) {
-        // TODO: Implement
-        return 0;
+    public int calculateProductionCapacity(List<DayOfWeek> days){
+        Objects.requireNonNull(days, "Days can't be null");
+        boolean isMasterAvailable = brewers.stream()
+                .anyMatch(b -> b.getRole() == Role.MASTER);
+
+        if(!isMasterAvailable){
+            throw new IllegalStateException("Master isn't available.");
+        }
+
+        return days.stream()
+                .mapToInt(this::countAvailableHelpers)
+                .sum();
     }
 
     /**
@@ -147,6 +156,9 @@ class Brewery {
      */
     // TODO: Implement countAvailableHelpers method
     private int countAvailableHelpers(DayOfWeek day) {
-        return 0;
+        return (int) brewers.stream()
+                .filter(b -> b.getRole() == Role.HELPER)
+                .filter(b -> b.isAvailableOn(day))
+                .count();
     }
 }
