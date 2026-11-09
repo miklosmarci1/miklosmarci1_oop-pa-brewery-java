@@ -54,8 +54,35 @@ class Brewery {
      * - What happens if there's not enough quantity?
      * - Should this modify the stock?
      */
-    void retrieveBeerFromStock() {
+    public List<Beer> retrieveBeerFromStock(String name, int quantity) {
         // TODO: Implement
+
+        List<Beer> beers = stock.get(name);
+        List<Beer> retrievedBeers = new ArrayList<>();
+
+        Objects.requireNonNull(name, "Name can't be null.");
+
+        if(quantity <= 0){
+            throw new IllegalArgumentException("Quantity must be greater than 0.");
+        }
+
+        if(!stock.containsKey(name)){
+            throw new IllegalArgumentException("No beer with this name is in stock.");
+        }
+
+        if(beers.size() < quantity){
+            throw new IllegalArgumentException("There are not enough beers in stock.");
+        }
+
+        for ( int i = 0; i < quantity; i++){
+            retrievedBeers.add(beers.remove(0));
+        }
+
+        if(beers.isEmpty()){
+            stock.remove(name);
+        }
+
+        return retrievedBeers;
     }
 
     /**
