@@ -1,6 +1,7 @@
 package com.codecool.brewery;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 /**
@@ -33,8 +34,9 @@ public abstract class Beer {
     // Ales can be stored at room temperature and have shorter fermentation times (14 days)
 
     // TODO: Consider how to handle different fermentation times for different beer types
-    void getDaysUntilReady() {
-
+    public int getDaysUntilReady() {
+        LocalDate beerReadyDate = productionDate.plusDays(getFermentationDays());
+        return Math.toIntExact(Math.max(0, ChronoUnit.DAYS.between(LocalDate.now(), beerReadyDate)));
     }
 
     // TODO: Add method to get storage temperature requirement
