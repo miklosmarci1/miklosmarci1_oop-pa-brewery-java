@@ -1,10 +1,7 @@
 package com.codecool.brewery;
 
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -12,14 +9,26 @@ import java.util.stream.Collectors;
  * Many methods are incomplete and need to be implemented.
  */
 class Brewery {
-    String name;
-    List<Brewer> brewers;
+    private final String name;
+    private final List<Brewer> brewers = new ArrayList<>();
 
-    Brewery(String name) {}
+    Brewery(String name) {
+        this.name = Objects.requireNonNull(name, "Name can't be null.");
+        if(name.isBlank()){
+            throw new IllegalArgumentException("Name can't be empty.");
+        }
+    }
 
-    void addBrewer() {
-        // TODO: Implement proper null checking and validation
-        // TODO: add brewer to brewers list
+    public void addBrewer(Brewer brewer) {
+        Objects.requireNonNull(brewer, "Brewer can't be null.");
+
+        if(brewer.getRole() == Role.MASTER &&
+        brewers.stream().anyMatch(b -> b.getRole() == Role.MASTER)
+        ){
+            throw new IllegalStateException("Only one master brewer is allowed!");
+        }
+
+        brewers.add(brewer);
     }
 
     void addBeerToStock() {
