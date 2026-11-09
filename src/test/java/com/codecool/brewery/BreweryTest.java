@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 
 import java.time.DayOfWeek;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,13 +21,26 @@ class BreweryTest {
     void setUp() {
         brewery = new Brewery("Test Brewery");
 
-        // Set up brewers
-        // TODO: master brewer: "Master John", 15 years experience
-        // TODO: helper brewer: "Helper Alice", 3 years experience, available Mon, Tue, Wed
-        // TODO: helper brewer: "Helper Bob", 2 years experience, available Mon, Thu, Fri
-        // TODO: helper brewer: "Helper Charlie", 4 years experience, available Tue, Wed, Thu
+        Brewer masterBrewer = new MasterBrewer("Master John", 15);
+        Brewer helper1 = new HelperBrewer("Helper Alice", 3, Set.of(
+                DayOfWeek.MONDAY,
+                DayOfWeek.TUESDAY,
+                DayOfWeek.WEDNESDAY));
+        Brewer helper2 = new HelperBrewer("Helper Bob", 2, Set.of(
+                DayOfWeek.MONDAY,
+                DayOfWeek.THURSDAY,
+                DayOfWeek.FRIDAY
+        ));
+        Brewer helper3 = new HelperBrewer("Helper Charlie", 4, Set.of(
+                DayOfWeek.TUESDAY,
+                DayOfWeek.WEDNESDAY,
+                DayOfWeek.THURSDAY
+        ));
 
-        // TODO: add master and helpers to brewery
+        brewery.addBrewer(masterBrewer);
+        brewery.addBrewer(helper1);
+        brewery.addBrewer(helper2);
+        brewery.addBrewer(helper3);
     }
 
     @Test
