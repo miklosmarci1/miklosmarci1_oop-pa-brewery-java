@@ -11,9 +11,9 @@ public abstract class Beer {
 
     Beer(String name, double alcoholContent, LocalDate productionDate) {
 
-        this.name = Objects.requireNonNull(name, "Name can't be null.");
+        this.name = Objects.requireNonNull(name, ErrorMessages.NAME_NULL_MESSAGE);
         if(this.name.isBlank()){
-            throw new IllegalArgumentException("Name can't be blank.");
+            throw new IllegalArgumentException(ErrorMessages.NAME_BLANK_MESSAGE);
         }
 
         if(alcoholContent < 0 || alcoholContent > 100){
