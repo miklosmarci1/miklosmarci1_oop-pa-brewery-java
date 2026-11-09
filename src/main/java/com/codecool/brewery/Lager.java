@@ -18,7 +18,7 @@ public class Lager extends Beer{
 
     @Override
     public boolean canBeStoredAt(double temp) {
-        return temp < 5;
+        return temp < LAGER_MAX_STORAGE_TEMPERATURE;
     }
 
 }

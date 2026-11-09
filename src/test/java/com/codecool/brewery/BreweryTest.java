@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -12,30 +14,26 @@ import static org.junit.jupiter.api.Assertions.*;
 class BreweryTest {
 
     private Brewery brewery;
-    private Brewer masterBrewer;
-    private Brewer helper1;
-    private Brewer helper2;
-    private Brewer helper3;
+    private Brewer masterBrewer = new MasterBrewer("Master John", 15);;
+    private Brewer helper1 = new HelperBrewer("Helper Alice", 3, Set.of(
+            DayOfWeek.MONDAY,
+            DayOfWeek.TUESDAY,
+            DayOfWeek.WEDNESDAY
+    ));
+    private Brewer helper2 = new HelperBrewer("Helper Bob", 2, Set.of(
+            DayOfWeek.MONDAY,
+            DayOfWeek.THURSDAY,
+            DayOfWeek.FRIDAY
+    ));
+    private Brewer helper3 = new HelperBrewer("Helper Charlie", 4, Set.of(
+            DayOfWeek.TUESDAY,
+            DayOfWeek.WEDNESDAY,
+            DayOfWeek.THURSDAY
+    ));
 
     @BeforeEach
     void setUp() {
         brewery = new Brewery("Test Brewery");
-
-        Brewer masterBrewer = new MasterBrewer("Master John", 15);
-        Brewer helper1 = new HelperBrewer("Helper Alice", 3, Set.of(
-                DayOfWeek.MONDAY,
-                DayOfWeek.TUESDAY,
-                DayOfWeek.WEDNESDAY));
-        Brewer helper2 = new HelperBrewer("Helper Bob", 2, Set.of(
-                DayOfWeek.MONDAY,
-                DayOfWeek.THURSDAY,
-                DayOfWeek.FRIDAY
-        ));
-        Brewer helper3 = new HelperBrewer("Helper Charlie", 4, Set.of(
-                DayOfWeek.TUESDAY,
-                DayOfWeek.WEDNESDAY,
-                DayOfWeek.THURSDAY
-        ));
 
         brewery.addBrewer(masterBrewer);
         brewery.addBrewer(helper1);
@@ -46,7 +44,6 @@ class BreweryTest {
     @Test
     @DisplayName("Simple Test: Production capacity on single day equals available helpers")
     void testProductionCapacityOnSingleDay() {
-        // Monday: helper1 and helper2 are available (2 helpers)
         int capacity = brewery.calculateProductionCapacity(List.of(DayOfWeek.MONDAY));
         assertEquals(2, capacity, "Production capacity should equal number of helpers on Monday");
     }
@@ -54,24 +51,35 @@ class BreweryTest {
     @Test
     @DisplayName("Production capacity on multiple days returns sum of helpers")
     void testProductionCapacityOnMultipleDays() {
-        // TODO: implement test for multiple days
+
+        int capacity = brewery.calculateProductionCapacity(List.of(DayOfWeek.MONDAY,
+                DayOfWeek.WEDNESDAY
+        ));
+
+        assertEquals(4, capacity);
     }
 
     @Test
     @DisplayName("Production capacity throws exception on invalid day name")
     void testProductionCapacityWithInvalidDay() {
-        // TODO: implement test for invalid day name
+
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () ->
+                brewery.findOptimalProductionDays("MNODAY", "FRIDAY"));
+
+        assertEquals("Invalid day name: MNODAY", e.getMessage());
     }
 
     @Test
     @DisplayName("Find expired beers returns beers older than 180 days")
     void testFindExpiredBeers() {
-        // Add fresh beer
-        // TODO: create and add beer: "Fresh", 5.0%, produced 100 days ago
 
-        // Add matured beers
-        // TODO: create and add beer: "Old Ale", 6.0%, produced 200 days ago
-        // TODO: create and add beer: "Old Lager", 5.5%, produced 190 days ago
+        Beer freshBeer = new Lager("Fresh", 5.0, LocalDate.now().minusDays(100));
+        Beer oldAle = new Ale("Old Ale", 6.0, LocalDate.now().minusDays(200));
+        Beer oldLager = new Lager("Old Lager", 5.5, LocalDate.now().minusDays(190));
+
+        brewery.addBeerToStock(freshBeer, 4);
+        brewery.addBeerToStock(oldAle, 20);
+        brewery.addBeerToStock(oldLager, 3);
 
         List<String> expired = brewery.findMaturedBeers();
 
@@ -84,29 +92,59 @@ class BreweryTest {
     @Test
     @DisplayName("Find optimal production days returns days with most helpers")
     void testFindOptimalProductionDays() {
-        // TODO: implement test for finding optimal production days for the given setup
+        List<String> optimalProductionDays = brewery.findOptimalProductionDays("MONDAY", "FRIDAY");
+
+        List<String> expectedDays = new ArrayList<>();
+        expectedDays.add("MONDAY");
+        expectedDays.add("TUESDAY");
+        expectedDays.add("WEDNESDAY");
+        expectedDays.add("THURSDAY");
+
+        assertEquals(expectedDays, optimalProductionDays);
     }
 
     @Test
     @DisplayName("Beer type has correct fermentation days")
     void testBeerFermentationDays() {
-        // TODO: implement test for fermentation days
-        // TODO: create Lager: "Test Lager", 5.0%, today; fermentation time shall be 21 days
-        // TODO: create Ale: "Test Ale", 5.5%, today; fermentation time shall be 14 days
+
+        Beer testLager = new Lager("Test Lager", 5.0, LocalDate.now());
+        Beer testAle = new Ale("Test Ale", 5.5, LocalDate.now());
+
+        assertEquals(21, testLager.getDaysUntilReady());
+        assertEquals(14, testAle.getDaysUntilReady());
     }
 
     @Test
     @DisplayName("Beer type has correct storage temperature")
     void testBeerStorageTemperature() {
-        // TODO: implement test for storage temperature
-        // TODO: create Lager: "Test Lager", 5.0%, today
-        // TODO: create Ale: "Test Ale", 5.5%, today
+
+        Beer testLager = new Lager("Test Lager", 5.0, LocalDate.now());
+        Beer testAle = new Ale("Test Ale", 5.5, LocalDate.now());
+
+        assertTrue(testLager.canBeStoredAt(2));
+        assertTrue(testLager.canBeStoredAt(4.9));
+        assertFalse(testLager.canBeStoredAt(5));
+        assertFalse(testLager.canBeStoredAt(6));
+
+        assertTrue(testAle.canBeStoredAt(20));
+        assertTrue(testAle.canBeStoredAt(24.9));
+        assertTrue(testAle.canBeStoredAt(19.01));
+        assertFalse(testAle.canBeStoredAt(19));
+        assertFalse(testAle.canBeStoredAt(25));
     }
 
     @Test
     @DisplayName("Helper brewer availability is correct")
     void testHelperBrewerAvailability() {
-        // TODO: implement test for helper brewer availability
+
+        for (DayOfWeek day : DayOfWeek.values()){
+            assertTrue(masterBrewer.isAvailableOn(day));
+        }
+
+        assertTrue(helper1.isAvailableOn(DayOfWeek.MONDAY));
+        assertTrue(helper1.isAvailableOn(DayOfWeek.TUESDAY));
+        assertFalse(helper1.isAvailableOn(DayOfWeek.FRIDAY));
+
     }
 
 }

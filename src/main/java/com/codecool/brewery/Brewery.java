@@ -13,9 +13,9 @@ class Brewery {
     private static final int OLD_BEER_THRESHOLD_DAYS = 180;
 
     Brewery(String name) {
-        this.name = Objects.requireNonNull(name, "Name can't be null.");
+        this.name = Objects.requireNonNull(name, ErrorMessages.NAME_NULL_MESSAGE);
         if(name.isBlank()){
-            throw new IllegalArgumentException("Name can't be empty.");
+            throw new IllegalArgumentException(ErrorMessages.NAME_BLANK_MESSAGE);
         }
     }
 
@@ -47,7 +47,7 @@ class Brewery {
 
         List<Beer> retrievedBeers = new ArrayList<>();
 
-        Objects.requireNonNull(name, "Name can't be null.");
+        Objects.requireNonNull(name, ErrorMessages.NAME_NULL_MESSAGE);
 
         if(quantity <= 0){
             throw new IllegalArgumentException("Quantity must be greater than 0.");
