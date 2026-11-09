@@ -12,9 +12,13 @@ public abstract class Brewer {
     private final int yearsOfExperience;
 
     Brewer(String name, int yearsOfExperience) {
-        this.name = Objects.requireNonNull(name);
+        this.name = Objects.requireNonNull(name, "Name can't be null.");
         if(name.isBlank()){
-            throw new IllegalArgumentException("Name can't be empty.");
+            throw new IllegalArgumentException("Name can't be blank.");
+        }
+
+        if(yearsOfExperience < 0){
+            throw new IllegalArgumentException("Experience can't be less than 0.");
         }
         this.yearsOfExperience = yearsOfExperience;
     }
@@ -23,4 +27,12 @@ public abstract class Brewer {
     // TODO: Consider how different types of brewers have different schedules
     // TODO: Consider isAvailableOn may accept parameters for day checks
     public abstract boolean isAvailableOn(DayOfWeek day);
+
+    public String getName(){
+        return name;
+    }
+
+    public int getYearsOfExperience(){
+        return yearsOfExperience;
+    }
 }
