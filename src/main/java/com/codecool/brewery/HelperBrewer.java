@@ -16,4 +16,9 @@ public class HelperBrewer extends Brewer{
     public boolean isAvailableOn(DayOfWeek day) {
         return workingDays.contains(day);
     }
+
+    @Override
+    public Role getRole() {
+        return Role.HELPER;
+    }
 }

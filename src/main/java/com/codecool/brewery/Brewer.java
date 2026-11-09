@@ -35,4 +35,6 @@ public abstract class Brewer {
     public int getYearsOfExperience(){
         return yearsOfExperience;
     }
+
+    public abstract Role getRole();
 }

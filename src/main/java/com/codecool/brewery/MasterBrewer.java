@@ -13,4 +13,9 @@ public class MasterBrewer extends Brewer{
         return true;
     }
 
+    @Override
+    public Role getRole() {
+        return Role.MASTER;
+    }
+
 }
