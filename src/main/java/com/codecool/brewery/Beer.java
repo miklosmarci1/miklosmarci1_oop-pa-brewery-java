@@ -8,21 +8,20 @@ public abstract class Beer {
     private final String name;
     private final double alcoholContent;
     private final LocalDate productionDate;
+    private static final double MIN_ALCOHOL_CONTENT = 0;
+    private static final double MAX_ALCOHOL_CONTENT = 100;
 
     Beer(String name, double alcoholContent, LocalDate productionDate) {
 
-        this.name = Objects.requireNonNull(name, ErrorMessages.NAME_NULL_MESSAGE);
-        if(this.name.isBlank()){
-            throw new IllegalArgumentException(ErrorMessages.NAME_BLANK_MESSAGE);
-        }
+        this.name = Validator.validateName(name);
 
-        if(alcoholContent < 0 || alcoholContent > 100){
-            throw new IllegalArgumentException("Alcohol content must be between 0 and 100.");
+        if(alcoholContent < MIN_ALCOHOL_CONTENT || alcoholContent > MAX_ALCOHOL_CONTENT){
+            throw new IllegalArgumentException(ErrorMessages.ALCOHOL_CONTENT_OUT_OF_RANGE_MESSAGE);
         }
 
         this.alcoholContent = alcoholContent;
 
-        this.productionDate = Objects.requireNonNull(productionDate, "Production date can't be null.");
+        this.productionDate = Objects.requireNonNull(productionDate, ErrorMessages.PRODUCTION_DATE_NULL_MESSAGE);
     }
 
     public int getDaysUntilReady() {
@@ -38,11 +37,8 @@ public abstract class Beer {
         return name;
     }
 
-    public double getAlcoholContent(){
-        return alcoholContent;
-    }
-
     public LocalDate getProductionDate(){
         return productionDate;
     }
+
 }

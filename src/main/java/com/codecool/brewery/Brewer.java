@@ -1,7 +1,6 @@
 package com.codecool.brewery;
 
 import java.time.DayOfWeek;
-import java.util.Objects;
 
 public abstract class Brewer {
     private final String name;
@@ -9,13 +8,10 @@ public abstract class Brewer {
     private static final int ZERO_EXPERIENCE = 0;
 
     Brewer(String name, int yearsOfExperience) {
-        this.name = Objects.requireNonNull(name, ErrorMessages.NAME_NULL_MESSAGE);
-        if(name.isBlank()){
-            throw new IllegalArgumentException(ErrorMessages.NAME_BLANK_MESSAGE);
-        }
+        this.name = Validator.validateName(name);
 
         if(yearsOfExperience < ZERO_EXPERIENCE){
-            throw new IllegalArgumentException("Experience can't be less than " + ZERO_EXPERIENCE + ".");
+            throw new IllegalArgumentException(ErrorMessages.EXPERIENCE_BELOW_MINIMUM_MESSAGE + ZERO_EXPERIENCE);
         }
         this.yearsOfExperience = yearsOfExperience;
     }
