@@ -13,19 +13,16 @@ class Brewery {
     private static final int OLD_BEER_THRESHOLD_DAYS = 180;
 
     Brewery(String name) {
-        this.name = Objects.requireNonNull(name, ErrorMessages.NAME_NULL_MESSAGE);
-        if(name.isBlank()){
-            throw new IllegalArgumentException(ErrorMessages.NAME_BLANK_MESSAGE);
-        }
+        this.name = Validator.validateName(name);
     }
 
     public void addBrewer(Brewer brewer) {
-        Objects.requireNonNull(brewer, "Brewer can't be null.");
+        Objects.requireNonNull(brewer, ErrorMessages.BREWER_NULL_MESSAGE);
 
-        if(brewer.getRole() == Role.MASTER &&
-        brewers.stream().anyMatch(b -> b.getRole() == Role.MASTER)
+        if(isRole(brewer, Role.MASTER) &&
+        hasBrewerWithRole(Role.MASTER)
         ){
-            throw new IllegalStateException("Only one master brewer is allowed!");
+            throw new IllegalStateException(ErrorMessages.ONLY_ONE_MASTER_BREWER_ALLOWED_MESSAGE);
         }
 
         brewers.add(brewer);
@@ -33,10 +30,10 @@ class Brewery {
 
     public void addBeerToStock(Beer beer, double temp) {
 
-        Objects.requireNonNull(beer, "Beer can't be null");
+        Objects.requireNonNull(beer, ErrorMessages.BEER_NULL_MESSAGE);
 
         if(!beer.canBeStoredAt(temp)){
-            throw new IllegalArgumentException("This beer can't be stored at this temperature.");
+            throw new IllegalArgumentException(ErrorMessages.BEER_STORAGE_TEMPERATURE_INVALID_MESSAGE);
         }
 
         stock.computeIfAbsent(beer.getName(), key -> new ArrayList<>())
@@ -47,40 +44,59 @@ class Brewery {
 
         List<Beer> retrievedBeers = new ArrayList<>();
 
-        Objects.requireNonNull(name, ErrorMessages.NAME_NULL_MESSAGE);
+        Validator.validateName(name);
 
-        if(quantity <= 0){
-            throw new IllegalArgumentException("Quantity must be greater than 0.");
-        }
+        validateQuantity(quantity);
 
-        if(!stock.containsKey(name)){
-            throw new IllegalArgumentException("No beer with this name is in stock.");
-        }
+        validateStockKey(name);
 
         List<Beer> beers = stock.get(name);
 
-        if(beers.size() < quantity){
-            throw new IllegalArgumentException("There are not enough beers in stock.");
-        }
+        validateAvailableBeerQuantity(beers, quantity);
 
-        for ( int i = 0; i < quantity; i++){
-            retrievedBeers.add(beers.remove(0));
-        }
+        retrieveBeers(retrievedBeers, beers, quantity);
 
-        if(beers.isEmpty()){
-            stock.remove(name);
-        }
+        removeBeersIfStockIsEmpty(beers, name);
 
         return retrievedBeers;
     }
 
+    private void validateQuantity(int quantity){
+        if(quantity <= 0){
+            throw new IllegalArgumentException(ErrorMessages.QUANTITY_MUST_BE_POSITIVE_MESSAGE);
+        }
+    }
+
+    private void validateStockKey(String name){
+        if(!stock.containsKey(name)){
+            throw new IllegalArgumentException(ErrorMessages.INVALID_BEER_NAME_MESSAGE);
+        }
+    }
+
+    private void validateAvailableBeerQuantity(List<Beer> list, int quantity){
+        if(list.size() < quantity){
+            throw new IllegalArgumentException(ErrorMessages.INVALID_AMOUNT_OF_BEERS_MESSAGE);
+        }
+    }
+
+    private void removeBeersIfStockIsEmpty(List<Beer> list, String name){
+        if(list.isEmpty()){
+            stock.remove(name);
+        }
+    }
+
+    private void retrieveBeers(List<Beer> list, List<Beer> retrievedList, int quantity){
+        for (int i = 0; i < quantity; i++){
+            retrievedList.add(list.remove(0));
+        }
+    }
+
     public int calculateProductionCapacity(List<DayOfWeek> days){
-        Objects.requireNonNull(days, "Days can't be null");
-        boolean isMasterAvailable = brewers.stream()
-                .anyMatch(b -> b.getRole() == Role.MASTER);
+        Objects.requireNonNull(days, ErrorMessages.DAYS_NULL_MESSAGE);
+        boolean isMasterAvailable = hasBrewerWithRole(Role.MASTER);
 
         if(!isMasterAvailable){
-            throw new IllegalStateException("Master isn't available.");
+            throw new IllegalStateException(ErrorMessages.MASTER_NOT_AVAILABLE_MESSAGE);
         }
 
         return days.stream()
@@ -160,8 +176,16 @@ class Brewery {
 
     private int countAvailableHelpers(DayOfWeek day) {
         return (int) brewers.stream()
-                .filter(b -> b.getRole() == Role.HELPER)
+                .filter(b -> isRole(b, Role.HELPER))
                 .filter(b -> b.isAvailableOn(day))
                 .count();
+    }
+
+    private boolean isRole(Brewer brewer, Role role){
+        return brewer.getRole() == role;
+    }
+
+    private boolean hasBrewerWithRole(Role role){
+        return brewers.stream().anyMatch(b -> b.getRole() == role);
     }
 }
