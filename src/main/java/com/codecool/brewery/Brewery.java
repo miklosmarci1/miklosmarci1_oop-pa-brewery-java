@@ -67,7 +67,7 @@ class Brewery {
 
     private void validateStockKey(String name){
         if(!stock.containsKey(name)){
-            throw new IllegalArgumentException(ErrorMessages.INVALID_BEER_NAME_MESSAGE);
+            throw new NoSuchElementException(ErrorMessages.INVALID_BEER_NAME_MESSAGE);
         }
     }
 
@@ -93,9 +93,9 @@ class Brewery {
 
     public int calculateProductionCapacity(List<DayOfWeek> days){
         Objects.requireNonNull(days, ErrorMessages.DAYS_NULL_MESSAGE);
-        boolean isMasterAvailable = hasBrewerWithRole(Role.MASTER);
+        boolean hasMasterBrewer = hasBrewerWithRole(Role.MASTER);
 
-        if(!isMasterAvailable){
+        if(!hasMasterBrewer){
             throw new IllegalStateException(ErrorMessages.MASTER_NOT_AVAILABLE_MESSAGE);
         }
 
@@ -108,7 +108,7 @@ class Brewery {
 
         return stock.values().stream()
                 .flatMap(List::stream)
-                .filter(a -> ChronoUnit.DAYS.between(a.getProductionDate(), LocalDate.now()) > OLD_BEER_THRESHOLD_DAYS)
+                .filter(beer -> ChronoUnit.DAYS.between(beer.getProductionDate(), LocalDate.now()) > OLD_BEER_THRESHOLD_DAYS)
                 .map(Beer::getName)
                 .toList();
     }
@@ -186,6 +186,6 @@ class Brewery {
     }
 
     private boolean hasBrewerWithRole(Role role){
-        return brewers.stream().anyMatch(b -> b.getRole() == role);
+        return brewers.stream().anyMatch(b -> isRole(b, role));
     }
 }

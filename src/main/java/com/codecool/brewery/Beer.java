@@ -40,4 +40,5 @@ public abstract class Beer {
     public LocalDate getProductionDate(){
         return productionDate;
     }
+
 }
