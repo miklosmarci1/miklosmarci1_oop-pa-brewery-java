@@ -42,8 +42,6 @@ class Brewery {
 
     public List<Beer> retrieveBeerFromStock(String name, int quantity) {
 
-        List<Beer> retrievedBeers = new ArrayList<>();
-
         Validator.validateName(name);
 
         validateQuantity(quantity);
@@ -54,7 +52,7 @@ class Brewery {
 
         validateAvailableBeerQuantity(beers, quantity);
 
-        retrieveBeers(retrievedBeers, beers, quantity);
+        List<Beer> retrievedBeers = retrieveBeers(beers, quantity);
 
         removeBeersIfStockIsEmpty(beers, name);
 
@@ -75,7 +73,7 @@ class Brewery {
 
     private void validateAvailableBeerQuantity(List<Beer> list, int quantity){
         if(list.size() < quantity){
-            throw new IllegalArgumentException(ErrorMessages.INVALID_AMOUNT_OF_BEERS_MESSAGE);
+            throw new IllegalStateException(ErrorMessages.INVALID_AMOUNT_OF_BEERS_MESSAGE);
         }
     }
 
@@ -85,10 +83,12 @@ class Brewery {
         }
     }
 
-    private void retrieveBeers(List<Beer> list, List<Beer> retrievedList, int quantity){
+    private List<Beer> retrieveBeers(List<Beer> beers, int quantity){
+        List<Beer> retrievedBeers = new ArrayList<>();
         for (int i = 0; i < quantity; i++){
-            retrievedList.add(list.remove(0));
+            retrievedBeers.add(beers.remove(0));
         }
+        return retrievedBeers;
     }
 
     public int calculateProductionCapacity(List<DayOfWeek> days){
