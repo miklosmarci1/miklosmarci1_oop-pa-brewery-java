@@ -38,10 +38,6 @@ public abstract class Beer {
         return name;
     }
 
-    public double getAlcoholContent(){
-        return alcoholContent;
-    }
-
     public LocalDate getProductionDate(){
         return productionDate;
     }
